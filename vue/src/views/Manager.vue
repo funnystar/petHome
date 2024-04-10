@@ -45,6 +45,10 @@
             <el-menu-item index="/notice">公告信息</el-menu-item>
             <el-menu-item index="/animal">宠物信息</el-menu-item>
             <el-menu-item index="/adopt">领养信息</el-menu-item>
+            <el-menu-item index="/room">房间信息</el-menu-item>
+            <el-menu-item index="/foster">寄养信息</el-menu-item>
+            <el-menu-item index="/goods" v-if="user.role === 'ADMIN'">宠物用品</el-menu-item>
+            <el-menu-item index="/goodsUser" v-else>宠物用品</el-menu-item>
 
           </el-submenu>
 

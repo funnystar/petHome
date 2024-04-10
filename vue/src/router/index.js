@@ -25,7 +25,11 @@ const routes = [
       { path: 'password', name: 'Password', meta: { name: '修改密码' }, component: () => import('../views/manager/Password') },
       { path: 'notice', name: 'Notice', meta: { name: '公告信息' }, component: () => import('../views/manager/Notice') },
       { path: 'animal', name: 'Animal', meta: { name: '宠物信息' }, component: () => import('../views/manager/Animal') },
-      { path: 'adopt', name: 'Adopt', meta: { name: '宠物信息' }, component: () => import('../views/manager/Adopt') },
+      { path: 'adopt', name: 'Adopt', meta: { name: '领养信息' }, component: () => import('../views/manager/Adopt') },
+      { path: 'room', name: 'Room', meta: { name: '房间信息' }, component: () => import('../views/manager/Room') },
+      { path: 'foster', name: 'Foster', meta: { name: '寄养信息' }, component: () => import('../views/manager/Foster') },
+      { path: 'goods', name: 'Goods', meta: { name: '宠物用品' }, component: () => import('../views/manager/Goods') },
+      { path: 'goodsUser', name: 'GoodsUser', meta: { name: '宠物用品' }, component: () => import('../views/manager/GoodsUser') },
     ]
   },
   {
