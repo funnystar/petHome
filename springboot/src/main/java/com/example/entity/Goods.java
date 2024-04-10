@@ -19,6 +19,8 @@ public class Goods implements Serializable {
     /** 用品数量 */
     private Integer num;
 
+    private Integer tmpNum = 1;
+
     public Integer getId() {
         return id;
     }
@@ -57,5 +59,13 @@ public class Goods implements Serializable {
 
     public void setNum(Integer num) {
         this.num = num;
+    }
+
+    public Integer getTmpNum() {
+        return tmpNum;
+    }
+
+    public void setTmpNum(Integer tmpNum) {
+        this.tmpNum = tmpNum;
     }
 }
