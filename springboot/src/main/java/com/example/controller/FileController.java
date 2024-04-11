@@ -45,7 +45,7 @@ public class FileController {
                 FileUtil.mkdir(filePath);
             }
             // 文件存储形式：时间戳-文件名
-            FileUtil.writeBytes(file.getBytes(), filePath + flag + "-" + fileName);  // ***/manager/files/1697438073596-avatar.png
+            FileUtil.writeBytes(file.getBytes(), filePath + flag + "-" + fileName);  // ***/manager/files/time-name.png
             System.out.println(fileName + "--上传成功");
 
         } catch (Exception e) {
