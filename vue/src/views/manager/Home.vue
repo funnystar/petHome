@@ -73,6 +73,11 @@ export default {
       })
     },
     adopt(animal) {
+      // 判断如果为管理员用户不能使用领养操作
+      if (this.user.role === 'ADMIN') {
+        this.$message.warning('您的角色不支持该操作')
+        return
+      }
       let data = JSON.parse(JSON.stringify(animal))
       data.status = '已领养'
       this.$request.put('/animal/update',data).then(res => {

@@ -42,18 +42,19 @@
             <template slot="title">
               <i class="el-icon-menu"></i><span>信息管理</span>
             </template>
-            <el-menu-item index="/notice">公告信息</el-menu-item>
-            <el-menu-item index="/animal">宠物信息</el-menu-item>
+            <el-menu-item index="/notice" v-if="user.role === 'ADMIN'">公告信息</el-menu-item>
+            <el-menu-item index="/animal" v-if="user.role === 'ADMIN'">宠物信息</el-menu-item>
             <el-menu-item index="/adopt">领养信息</el-menu-item>
-            <el-menu-item index="/room">房间信息</el-menu-item>
+            <el-menu-item index="/room" v-if="user.role === 'ADMIN'">房间信息</el-menu-item>
             <el-menu-item index="/foster">寄养信息</el-menu-item>
             <el-menu-item index="/goods" v-if="user.role === 'ADMIN'">宠物用品</el-menu-item>
             <el-menu-item index="/goodsUser" v-else>宠物用品</el-menu-item>
             <el-menu-item index="/orders">订单信息</el-menu-item>
-
+            <el-menu-item index="/submit">流浪宠物上报</el-menu-item>
           </el-submenu>
 
-          <el-submenu index="user">
+          <!--只有管理员可以使用用户管理-->
+          <el-submenu index="user" v-if="user.role === 'ADMIN'">
             <template slot="title">
               <i class="el-icon-menu"></i><span>用户管理</span>
             </template>
