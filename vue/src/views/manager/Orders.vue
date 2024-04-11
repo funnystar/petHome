@@ -1,42 +1,37 @@
 <template>
   <div>
     <div class="search">
-      <el-input placeholder="请输入商品名称" style="width: 200px" v-model="name"></el-input>
+      <el-input placeholder="请输入订单编号" style="width: 200px" v-model="orderId"></el-input>
       <el-button type="info" plain style="margin-left: 10px" @click="load(1)">查询</el-button>
       <el-button type="warning" plain style="margin-left: 10px" @click="reset">重置</el-button>
     </div>
 
-    <div class="operation">
-      <el-button type="primary" plain @click="handleAdd">新增</el-button>
-      <el-button type="danger" plain @click="delBatch">批量删除</el-button>
-    </div>
-
     <div class="table">
-      <el-table :data="tableData" stripe  @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table :data="tableData" stripe >
         <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
         <el-table-column prop="img" label="商品图片" show-overflow-tooltip>
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
-              <el-image style="width: 40px; height: 40px" v-if="scope.row.img"
-                        :src="scope.row.img" :preview-src-list="[scope.row.img]"></el-image>
+              <el-image style="width: 40px; height: 40px" v-if="scope.row.goodsImg"
+                        :src="scope.row.goodsImg" :preview-src-list="[scope.row.goodsImg]"></el-image>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="商品名称" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="goodsName" label="商品名称" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="buyName" label="下单人" show-overflow-tooltip></el-table-column>
         <el-table-column prop="orderId" label="订单编号"></el-table-column>
         <el-table-column prop="time" label="下单时间"></el-table-column>
         <el-table-column prop="username" label="收货人"></el-table-column>
-        <el-table-column prop="address" label="送货地址"></el-table-column>
         <el-table-column prop="phone" label="联系电话"></el-table-column>
+        <el-table-column prop="address" label="送货地址"></el-table-column>
         <el-table-column prop="num" label="购买数量"></el-table-column>
         <el-table-column prop="price" label="订单价格"></el-table-column>
         <el-table-column prop="status" label="订单状态"></el-table-column>
 
         <el-table-column label="操作" width="180" align="center">
           <template v-slot="scope">
-            <el-button plain type="primary" @click="handleEdit(scope.row)" size="mini">编辑</el-button>
-            <el-button plain type="danger" size="mini" @click=del(scope.row.id)>删除</el-button>
+            <el-button plain type="primary" @click="changeStatus(scope.row, '已完成')" size="mini" v-if="scope.row.status === '待收货' && user.role === 'USER'">确认收货</el-button>
+            <el-button plain type="primary" @click="changeStatus(scope.row, '待收货')" size="mini" v-if="scope.row.status === '待发货' && user.role === 'ADMIN'">发货</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,7 +60,7 @@ export default {
       pageNum: 1,   // 当前的页码
       pageSize: 10,  // 每页显示的个数
       total: 0,
-      name: null,
+      orderId: null,
       fromVisible: false,
       form: {},
       user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
@@ -77,17 +72,16 @@ export default {
     this.load(1)
   },
   methods: {
-    del(id) {   // 单个删除
-      this.$confirm('您确定删除吗？', '确认删除', {type: "warning"}).then(response => {
-        this.$request.delete('/orders/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
-            this.load(1)
-          } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
-          }
-        })
-      }).catch(() => {
+    changeStatus(row, status) {
+      let data = JSON.parse(JSON.stringify(row))
+      data.status = status
+      this.$request.put('/orders/update', data).then(res => {
+        if (res.code === '200') {
+          this.$message.success('操作成功')
+          this.load(1)
+        } else {
+          this.$message.error(res.msg)
+        }
       })
     },
     load(pageNum) {  // 分页查询
@@ -96,7 +90,7 @@ export default {
         params: {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
-          name: this.name,
+          orderId: this.orderId,
         }
       }).then(res => {
         this.tableData = res.data?.list
@@ -104,7 +98,7 @@ export default {
       })
     },
     reset() {
-      this.name = null
+      this.orderId = null
       this.load(1)
     },
     handleCurrentChange(pageNum) {

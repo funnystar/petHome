@@ -32,7 +32,7 @@ public class Orders implements Serializable {
     private Double price;
 
     /** 用户姓名 */
-    private String userName;
+    private String buyName;
     /** 商品图片 */
     private String goodsImg;
     /** 商品名字 */
@@ -118,14 +118,6 @@ public class Orders implements Serializable {
         this.price = price;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getGoodsImg() {
         return goodsImg;
     }
@@ -148,5 +140,13 @@ public class Orders implements Serializable {
 
     public void setGoodsId(Integer goodsId) {
         this.goodsId = goodsId;
+    }
+
+    public String getBuyName() {
+        return buyName;
+    }
+
+    public void setBuyName(String buyName) {
+        this.buyName = buyName;
     }
 }

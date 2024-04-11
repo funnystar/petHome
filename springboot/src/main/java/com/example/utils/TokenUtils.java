@@ -39,6 +39,7 @@ public class TokenUtils {
     @PostConstruct
     public void setUserService() {
         staticAdminService = adminService;
+        staticUserService = userService;
     }
 
     /**
