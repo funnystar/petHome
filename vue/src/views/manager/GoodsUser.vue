@@ -6,11 +6,6 @@
       <el-button type="warning" plain style="margin-left: 10px" @click="reset">重置</el-button>
     </div>
 
-    <div class="operation">
-      <el-button type="primary" plain @click="handleAdd">新增</el-button>
-      <el-button type="danger" plain @click="delBatch">批量删除</el-button>
-    </div>
-
     <div class="table">
       <div>
         <el-row>
@@ -27,7 +22,7 @@
                   <el-input-number v-model="item.tmpNum" :min="1" :max="item.num" size="mini"></el-input-number>
                 </div>
                 <div style="margin-top: 15px">
-                  <el-button type="warning" size="mini" :disabled="item.num === 0">购买</el-button>
+                  <el-button type="warning" size="mini" :disabled="item.num === 0" @click="handleEdit(item)">购买</el-button>
                 </div>
               </div>
             </div>
@@ -46,7 +41,23 @@
         </el-pagination>
       </div>
     </div>
-
+    <el-dialog title="收费信息" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false" destroy-on-close>
+      <el-form label-width="100px" style="padding-right: 50px" :model="form" :rules="rules" ref="formRef">
+        <el-form-item prop="username" label="收货人">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="phone" label="联系方式">
+          <el-input v-model="form.phone" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="address" label="收货地址">
+          <el-input v-model="form.address" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="fromVisible = false">取 消</el-button>
+        <el-button type="primary" @click="buy">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -64,14 +75,14 @@ export default {
       form: {},
       user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       rules: {
-        name: [
-          {required: true, message: '请输入商品名称', trigger: 'blur'},
+        username: [
+          {required: true, message: '请输入收货人', trigger: 'blur'},
         ],
-        price: [
-          {required: true, message: '请输入商品价格', trigger: 'blur'},
+        phone: [
+          {required: true, message: '请输入联系方式', trigger: 'blur'},
         ],
-        num: [
-          {required: true, message: '请输入商品数量', trigger: 'blur'},
+        address: [
+          {required: true, message: '请输入收货地址', trigger: 'blur'},
         ]
       },
       ids: []
@@ -81,64 +92,29 @@ export default {
     this.load(1)
   },
   methods: {
-    handleAdd() {   // 新增数据
-      this.form = {}  // 新增数据的时候清空数据
-      this.fromVisible = true   // 打开弹窗
-    },
-    handleEdit(row) {   // 编辑数据
+    handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))  // 给form对象赋值  注意要深拷贝数据
       this.fromVisible = true   // 打开弹窗
     },
-    save() {   // 保存按钮触发的逻辑  它会触发新增或者更新
-      this.$refs.formRef.validate((valid) => {
-        if (valid) {
-          this.$request({
-            url: this.form.id ? '/goods/update' : '/goods/add',
-            method: this.form.id ? 'PUT' : 'POST',
-            data: this.form
-          }).then(res => {
-            if (res.code === '200') {  // 表示成功保存
-              this.$message.success('保存成功')
-              this.load(1)
-              this.fromVisible = false
-            } else {
-              this.$message.error(res.msg)  // 弹出错误的信息
-            }
-          })
-        }
-      })
-    },
-    del(id) {   // 单个删除
-      this.$confirm('您确定删除吗？', '确认删除', {type: "warning"}).then(response => {
-        this.$request.delete('/goods/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
-            this.load(1)
-          } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
-          }
-        })
-      }).catch(() => {
-      })
-    },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
-      this.ids = rows.map(v => v.id)   //  [1,2]
-    },
-    delBatch() {   // 批量删除
-      if (!this.ids.length) {
-        this.$message.warning('请选择数据')
-        return
+    buy() {
+      let data = {
+        userId: this.user.id,
+        goodsId: this.form.id,
+        username: this.form.username,
+        phone: this.form.phone,
+        address: this.form.address,
+        num: this.form.tmpNum,
+        status: '待发货',
+        price: parseFloat(this.form.tmpNum) * parseFloat(this.form.price)
       }
-      this.$confirm('您确定批量删除这些数据吗？', '确认删除', {type: "warning"}).then(response => {
-        this.$request.delete('/goods/delete/batch', {data: this.ids}).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
-            this.load(1)
-          } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
-          }
-        })
-      }).catch(() => {
+      this.$request.post('/orders/add', data).then(res => {
+        if (res.code === '200') {
+          this.$message.success('购买成功')
+          this.fromVisible = false
+          this.load(1)
+        } else {
+          this.$message.error(res.msg)
+        }
       })
     },
     load(pageNum) {  // 分页查询
@@ -160,9 +136,6 @@ export default {
     },
     handleCurrentChange(pageNum) {
       this.load(pageNum)
-    },
-    handleAvatarSuccess(response, file, fileList) {
-      this.form.img = response.data
     },
   }
 }
