@@ -52,7 +52,7 @@ public class FileController {
             System.err.println(fileName + "--文件上传失败");
         }
         String http = "http://" + ip + ":" + port + "/files/";
-        return Result.success(http + flag + "-" + fileName);  //  http://localhost:9090/files/1697438073596-avatar.png
+        return Result.success(http + flag + "-" + fileName);
     }
 
 
@@ -62,7 +62,7 @@ public class FileController {
      * @param flag
      * @param response
      */
-    @GetMapping("/{flag}")   //  1697438073596-avatar.png
+    @GetMapping("/{flag}")
     public void avatarPath(@PathVariable String flag, HttpServletResponse response) {
         OutputStream os;
         try {
