@@ -15,10 +15,6 @@
       <el-table :data="tableData" strip @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="id" label="序号" width="70" align="center" sortable></el-table-column>
-        <el-table-column prop="username" label="账号"></el-table-column>
-        <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="phone" label="电话"></el-table-column>
-        <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column label="头像">
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
@@ -27,6 +23,10 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column prop="username" label="账号"></el-table-column>
+        <el-table-column prop="name" label="姓名"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="role" label="角色"></el-table-column>
         <el-table-column label="操作" align="center" width="180">
           <template v-slot="scope">
@@ -52,6 +52,17 @@
 
     <el-dialog title="管理员" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false" destroy-on-close>
       <el-form :model="form" label-width="100px" style="padding-right: 50px" :rules="rules" ref="formRef">
+        <el-form-item label="头像">
+          <el-upload
+              class="avatar-uploader"
+              :action="$baseUrl + '/files/upload'"
+              :headers="{ token: user.token }"
+              list-type="picture"
+              :on-success="handleAvatarSuccess"
+          >
+            <el-button type="primary">上传头像</el-button>
+          </el-upload>
+        </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="用户名"></el-input>
         </el-form-item>
@@ -63,17 +74,6 @@
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="form.email" placeholder="邮箱"></el-input>
-        </el-form-item>
-        <el-form-item label="头像">
-          <el-upload
-              class="avatar-uploader"
-              :action="$baseUrl + '/files/upload'"
-              :headers="{ token: user.token }"
-              list-type="picture"
-              :on-success="handleAvatarSuccess"
-          >
-            <el-button type="primary">上传头像</el-button>
-          </el-upload>
         </el-form-item>
       </el-form>
 
